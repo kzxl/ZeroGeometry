@@ -1,5 +1,6 @@
 # ZeroGeometry
 
+[![ZeroPlatform Tier](https://img.shields.io/badge/ZeroPlatform-Tier%203%20(Perception%20%26%20AI)-7c3aed.svg)](https://github.com/kzxl/ZeroPlatform)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET Multi-Targeting](https://img.shields.io/badge/.NET-8.0%20%7C%204.6.2%20%7C%20Standard%202.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Point Cloud & Spatial](https://img.shields.io/badge/Geometry-ICP%20%7C%20KdTree%20%7C%20Delaunay-blue.svg)]()
