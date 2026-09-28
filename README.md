@@ -5,14 +5,18 @@
 [![.NET Multi-Targeting](https://img.shields.io/badge/.NET-8.0%20%7C%204.6.2%20%7C%20Standard%202.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Point Cloud & Spatial](https://img.shields.io/badge/Geometry-ICP%20%7C%20KdTree%20%7C%20Delaunay-blue.svg)]()
 [![Zero External Dependencies](https://img.shields.io/badge/Dependencies-0%20(Pure%20C%23)-brightgreen.svg)]()
-[![NuGet Version](https://img.shields.io/badge/NuGet-1.0.0-blue.svg)](https://www.nuget.org/packages/ZeroGeometry.Core)
+[![NuGet Version](https://img.shields.io/badge/NuGet-1.2.0-blue.svg)](https://www.nuget.org/packages/ZeroGeometry.Core/1.2.0)
 
-**ZeroGeometry** is a high-performance 2D/3D computational geometry, spatial indexing, and point cloud processing engine for .NET with **zero external dependencies**. Implemented from scratch in pure C#, it provides industrial metrology, 3D laser scan registration (Iterative Closest Point via SVD), spatial nearest-neighbor lookups (KdTree/RTree), polygon boolean clipping, offsetting, and Delaunay triangulation without PCL, CGAL, or OpenCV dependencies.
+**ZeroGeometry** is a high-performance 2D/3D computational geometry, spatial indexing, projective geometry, and point cloud processing engine for .NET with **zero external dependencies**. Implemented from scratch in pure C#, it provides industrial metrology, 3D laser scan registration (Iterative Closest Point via SVD), spatial nearest-neighbor lookups (KdTree/RTree), polygon boolean clipping, offsetting, Delaunay triangulation, and 2D Homography / projective rectification without PCL, CGAL, or OpenCV dependencies.
 
 ---
 
 ## 🌟 Key Capabilities
 
+- **2D Projective Geometry & Homography (`ZeroGeometry.Core.Projective`)**:
+  - **Homography2D Estimation**: Direct Linear Transform (DLT) solving the $3\times3$ planar homography matrix from 4 or more corresponding points using SVD / eigenanalysis.
+  - **RANSAC Robust Fitting**: Outlier rejection for noisy feature correspondences in perspective rectification and image alignment.
+  - **Perspective Warping & Inversion**: High-speed mapping of 2D points across projective planes with matrix inversion.
 - **3D Point Cloud Processing (`ZeroGeometry.Core.PointCloud`)**:
   - **ICP Registration**: Arun's SVD 3D rigid cloud alignment finding optimal rotation $R$ and translation $T$.
   - **Surface Normal Estimation**: Local covariance eigenanalysis (Jacobi $3\times3$ rotations) computing curvature and viewpoint-oriented normals.
@@ -73,6 +77,31 @@ var icp = new IcpRegistration(maxIterations: 30, tolerance: 1e-4);
 var result = icp.Align(sourceCloud, targetCloud);
 
 Console.WriteLine($"Fitness RMSE: {result.Rmse:F4} mm, Converged: {result.Converged}");
+```
+
+### 3. 2D Homography & Perspective Rectification
+```csharp
+using ZeroGeometry.Core.Projective;
+using ZeroGeometry.Core.Spatial;
+
+// Define 4 corner correspondences (source quad to target rectangle)
+var src = new[]
+{
+    new Point2D(100, 150), new Point2D(800, 120),
+    new Point2D(850, 600), new Point2D(120, 620)
+};
+var dst = new[]
+{
+    new Point2D(0, 0), new Point2D(1000, 0),
+    new Point2D(1000, 600), new Point2D(0, 600)
+};
+
+// Estimate homography via Direct Linear Transform (DLT)
+if (Homography2D.Estimate(src, dst, out var H))
+{
+    var mapped = H.Transform(new Point2D(450, 360));
+    Console.WriteLine($"Rectified Point: ({mapped.X:F1}, {mapped.Y:F1})");
+}
 ```
 
 ---
